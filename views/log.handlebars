@@ -1,0 +1,41 @@
+<div class="container">
+    <div class="block" style="margin-top: 3em">
+        <button class="button is-success" 
+            onClick="location.href='/log'">
+            전체
+        </button>
+        {{#each classes}}
+        <button class="button is-success" 
+                onClick="location.href='/log/{{dataValues.id}}'">
+            {{dataValues.name}}
+        </button>
+        {{/each}}
+    </div>
+    <div class="block">
+        {{#each logs}}
+        <div class="block">
+            <div class="card">
+                <header class="card-header">
+                    <p class="card-header-title">
+                        {{#if dataValues.subject}}
+                            {{dataValues.subject}}
+                        {{else}}
+                            (제목 없음) 
+                        {{/if}}
+                            : 
+                            {{dataValues.Class.dataValues.name}}
+                    </p>
+                </header>
+                <div class="card-content">
+                    <div class="content">
+                        첨부파일 {{dataValues.attachments}} 개
+                    </div>
+                    <div class="content">
+                        {{dataValues.createdAt}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</div>

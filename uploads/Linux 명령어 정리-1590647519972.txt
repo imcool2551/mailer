@@ -1,0 +1,189 @@
+유닉스 
+
+ rsync 동기화, tar 압축, find 검색
+
+ cp *.log bak ==> log확장자 파일을 모두 bak 디렉토리로 복사
+ Ctrl + C ===> 프로그램 종료, 입력 종료
+ echo 'string' > echo.txt ==> 표준출력을 리다이렉션해서 파일에 저장
+ ; => 성공하든 실패하든 실행, && ==> 이전명령 성공시 실행
+
+ man <명령어> ==> /keyword Enter ==> b, n 으로 검색
+
+ apt-get : 패키지매니저
+ update, upgrade, purge, remove, install
+
+ wget : url로 다운로드, curl 이란 비슷한 기능이 있음
+
+ 파이프라이닝 : 프로세스의 결과(출력)을 다른 프로세스의 입력으로 
+ ex) find --help | head
+
+ IO Redirection : 
+	>, 1>는 stdout redirect. 2>는 stderr redirect 
+	  ls -l > list.txt
+  	  ex) rm notexist.txt 2> error.log
+	< 는 stdin redirect
+	  ex) cat < file.txt, cat file.txt 는 차이는 없지만 전자는 stdin을 바꾼것이고 후자는 param을 전달한 것이다
+ 	>> 는 append
+
+ 커널은 하드웨어 관리, 쉘은 명령어를 해석한 뒤 커널에게 전달 (쉘 -> 커널 -> 하드웨어)
+ 	echo $0, echo $SHELL 으로 현재 쉘 확인
+	zsh or bash 로 쉘 변경
+	chsh 로 기본쉘 수정
+
+ 쉘스크립트로 여러개의 명령을 편하게 실행 (자동화)
+ 	#!bin/bash 로 인터프리터 명명
+	execute 권환을 줘야함
+ 
+ 디렉토리구조
+	/bin : 실행가능한 바이너리 명령들이 위치
+	/sbin : 시스템바이너리, 루트사용자가 사용
+	/etc : 설정파일(conf) 존재
+	/dev, /proc, /mnt : 디바이스, 프로세스, 마운트
+	/var : Variable file 존재(로그파일 등)
+	/tmp : Temporary file 존재
+	/home : 사용자디렉토리 (~로 한번에 이동)
+ 	/lib : 시스템라이브러리
+
+ 프로세스
+	ps aux: 백그라운드 프로세스까지 모든 프로세스 확인 (grep과 함께 사용), 
+	sudo kill pid로 프로세스 정지가능
+	htop : 그래픽으로 보여줌
+
+ 파일
+	locate FILENAME : FILENAME의 경로를 화면에 출력 (데이터베이스탐색, 빠름), cron이 자동 동기화, sudo updatedb로 수동 동기화
+	find : 실제 디렉토리 재귀탐색, 다양한 응용 가능
+	whereis : 실행파일 탐색, $PATH 에서 탐색
+	$PATH : 콜론을 통해서 여러가지 경로 지정, 실행파일을 어디서나 실행할 수 있도록 해줌
+	
+ 백그라운드 실행
+	Ctrl + z : 실행중인 프로그램을 백그라운드로 보냄
+	& : 백그라운드로 실행 (오래 걸리는 명령어 실행시 화면이 안 멈추게 해줌)
+	  ex) ls -alR / > list.txt 2> error.log &
+	jobs : 실행중인 프로그램을 보여줌 
+	fg : + 가 붙은 프로그램이 포어그라운드로 실행, fg %NUM 으로 지정가능
+	kill : kill -9 %NUM 으로 프로세스 종료
+
+ 데몬
+	항상실행
+	/etc/init.d 디렉토리에 데몬프로그램 존재
+	sudo service [program] start : 실행
+	sudo service [program] stop : 중지
+	sudo service [program] restart : 재시작
+	/etc/rc3.d 디렉토리에 데몬프로그램 링크시켜서 daemonize
+	/etc/rc3.d : cli에서 구동시 데몬프로그램 링크
+	/etc/rc5.d : gui에서 구동시 데몬프로그램 링크
+	ex ) S01apache2 : start, 우선순위 1로 apache2 링크, K는 kill
+	
+ cron
+	정기실행
+	crontab -e : 정기적으로 실행시킬 작업 작성하는 에디터 실행
+	minute(0~59,) hour(0~23), day of month(1~31), month(1~12), day of week (0~6)
+	메일을 보내는 작업을 백그라운드로 돌리기 위해 cron 사용
+
+ 쉘 시작 스크립트 (.bashrc | .bash_profile)
+	alias l='ls -al'
+	alias ..='cd ..'
+	alias c='clear'
+	환경변수 초기화
+
+ 다중사용자
+	id : 나는 누구인가
+	who : 현재 컴퓨터에 누가 접속해있는가 ? 
+	super(root) user VS user 
+	su : 사용자 변경하는 명령어
+	  ex) sudo su - | su - root : 슈퍼유저로 접속 (프롬프트가 $에서 #으로 변경)
+	      sudo su - [user] : user로 접속
+	sudo passwd -u root : 루트로 접속할 수 있도록 비밀번호 언락
+	sudo passwd -l [user] : user 로 접속할 수 없도록 비밀번호 락
+	sudo passwd -d [user] 로 패스워드 삭제할 수 있지만 위험함!
+	sudo useradd -m [user_name] : 루트의 권한으로 유저추가
+	sudo usermod -a -G sudo paul : 루트의 권한으로 paul을 sudo 그룹에 append
+	
+ 권한
+	{파일유형} : {파일권환} : {링크수} : {소유계정} : {그룹명} : {파일크기} : {마지막 변경일자} : {파일명}
+	chmod o-r perm.txt : perm.txt에서 other의 read 권한을 박탈
+	chmod u-r perm.txt : perm.txt에서 user의 read 권환을 박탈
+	chmod a+x perm.txt : perm.txt에서 모두에게 실행 권한을 부여
+	chmod a=rwx perm.txt : 모든사용자의 권한을 rwx 로 지정
+	chmod a= perm.txt : 모든사용자의 모든권한을 박탈
+	/bin/bash hi-machine.sh 은 r__ 권한으로 실행, ./hi-machine.sh 은 r_x 권한으로 실행
+	디렉토리의 읽기 권한 : 디렉토리안의 전체열람 권한 (ls -al) # 각각의 파일권한이 아니다!
+	디렉토리의 쓰기 권한 : 디렉토리안에서 파일생성 권한 (touch 등등)
+	디렉토리의 실행 권한 : 디렉토리 진입 권한 (cd)
+	chmod -R o+w perm : perm디렉토리 안의 모든 디렉토리를 재귀적으로 권한 변경
+
+ 그룹
+	sudo groupadd [options] group_name : group추가, 일반사용자는 불가능
+	/etc/group 에 그룹목록 존재
+	sudo usermod -aG [group_name] [user_name] : group에 유저추가
+	sudo chown [user][:group] [FILE | DIR] : 파일, 디렉토리의 소유자, 그룹 변경
+	sudo chmod g+w [FILE | DIR] 로 그룹권한 변경 
+
+ 인터넷
+	ping [domain_name] : 도메민 이름으로 공인 ip 알아내기
+	curl ifconfig.me : 내 공인 ip 알아내기
+	ifconfig | grep "inet" : 내 사설 ip 알아내기
+	웹서버는 80번 포트에서 리스닝
+	default gateway : 공유기의 사설 ip, 192.168.0.1, "ip route" 로 확인가능
+
+ 도메인
+	/etc/hosts 파일을 확인한 후 없다면 도메인서버에 접속
+	/etc/resolv.conf 에서 루트네임서버 변경가능
+	(기본) A레코드로 61.73.8.117 을 쓰면 ip와 도메인 매핑완료
+	(응용) CNAME 레코드로 www 쓰면 www.sangwook.ml 을 sangwook.ml 로 매핑
+	(응용) A레코드를 admin 으로하면 admin.sangwook.ml (서브도메인) 에 ip 매핑가능
+	차이점 >> CNAME 은 서브도메인을 다른도메인으로 매핑, A 레코드를 통한 서브도메인은 ip주소로 매핑
+	컴퓨터의 dns 서버는 루트 부터(.) => (.ml) => (sangwook.ml) => (Ipv4 Add) 까지 A레코드를 찾을 때 까지 NS를 계층적으로 탐색한다 
+	도메인의 네임서버를 스스로 정해줄 수 있다
+
+ 아파치
+	sudo service apache2 start
+	기본설정은 /etc/apache2/apache2.conf 에 존재
+	conf 파일은 /etc/apache2/sites-enabled 에 링크파일로 존재
+	기본 document root는 /var/www/html 
+	tail -f 명령으로 /var/log/apache2 에서 액세스로그와 에러로그 확인가능
+ 
+ ssh
+	ssh-client 의 호스트가 ssh-server 의 호스트를 원격제어
+ 	패키지이름 : openssh-server, openssh-client
+	서버시작 : sudo service ssh start
+ 	ssh-server 키기 -> client에서 ssh [user]@[ip | domain] -> 접속완료!
+	ssh server 는 22번포트에서 리스닝 (/etc/ssh/sshd_config 애서 변경가능)
+	ssh-keygen 하면 ~/.ssh 디렉토리에 id_rsa, id_rsa.pub 2개가 생긴다
+	ssh-copy-id syspro@192.168.0.69 
+	로그인하고싶은 컴퓨터의 ~/.ssh 의 authorized key 파일에 로그인할 컴퓨터의 공개키를 저장한다. 숙제를 비밀키로 풀어서 보낸다.
+	EC2 에선 i 옵션으로 비밀키의 경로를 줘야한다 ssh -i [PATH] [user]@[ip, domain]
+ 
+
+
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 

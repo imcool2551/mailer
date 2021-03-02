@@ -1,0 +1,41 @@
+<div class="container">
+    <div class="block">
+        <form action="/send" method="POST" enctype="multipart/form-data">
+            <div class="field">
+                <label class="label">제목</label>
+                <div class="control">
+                    <input type="text" class="input" name="subject" placeholder="제목">
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label">수업</label>
+                <div class="control">
+                    <div class="select">
+                    <select name="to" required>
+                        {{#each classes}}
+                            <option value="{{dataValues.id}}-{{dataValues.email}}">{{dataValues.name}}</option>
+                        {{/each}}
+                    </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label">Message</label>
+                <div class="control">
+                    <textarea class="textarea" name="text" placeholder="내용"></textarea>
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label">파일 선택</label>
+                <input type="file" name="files" multiple><br><br>
+            </div>
+
+            <div class="field">
+                <input type="submit" class="button is-success" value="전송">
+            </div>
+        </form>
+    </div>
+</div>
